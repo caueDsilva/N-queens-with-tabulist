@@ -13,7 +13,7 @@ import random
     print()
 """
 def creat_tabuleiro(n):
-    tabuleiro = [0] * n
+    tabuleiro = random.sample(range(1,n + 1),n)
     return tabuleiro
 
 
@@ -28,7 +28,7 @@ def print_tabu(tabu_list, n):
 
 def update_tabu(tabu_list,n1,n2):
     TESTE = 7           #<--------------------------------------------------PARAMETRO 1
-    tabu_list[n1][n2] = 6
+    tabu_list[n1][n2] = TESTE
     tabu_list[n2][n1] = tabu_list[n2][n1] + 1
     return tabu_list
 
@@ -51,38 +51,20 @@ def creat_neighbor(tabuleiro,n,tabu_list):
     if len(available_moves) == 0:
         print("Criterio de inspiraçao ativo")
         menor1 = 10000
-        posicao = [0] * 2
+        posicao = [0,0]
         for i in range(n):
-            for j in range(i + 1 ,n): 
-                if (i>j and tabu_list[i][j] < menor1):
+            for j in range(i): 
+                if (tabu_list[i][j] < menor1):
                     menor1 = tabu_list[i][j]
-                    posicao.append(i)
-                    posicao.append(j)
-
-        v1= tabuleiro.copy()
-
-        aux = v1[posicao[0]]
-        v1[posicao[0]] = v1[posicao[1]]
-        v1[posicao[1]] = aux
-
-        update_tabu(tabu_list,posicao[0],posicao[1])
-        return v1
-
-    n1, n2 = random.choice(available_moves)
-
+                    posicao = (i,j)
+        n1,n2 = posicao
+    else: 
+        n1, n2 = random.choice(available_moves)
     v1 = tabuleiro.copy()
-
-    aux = v1[n1]
-    v1[n1] = v1[n2]
-    v1[n2] = aux
-
+    v1[n1],v1[n2] = v1[n2] , v1[n1]
     update_tabu(tabu_list, n1, n2)
 
     return v1
-
-
-
-
 
 def fitness(tabuleiro,n):
     Dp = [0] * n
@@ -95,57 +77,45 @@ def fitness(tabuleiro,n):
     fit = len(Dp) + len(Dn) - len(set(Dp)) - len(set(Dn))
     return fit
 
-
-
 def n_queens(best_solution,n,tabu_list):
 
-    
-    best_solution = random.sample(range(1,n + 1),n)
+    #best_solution = random.sample(range(1,n + 1),n)
 
     print("Tabuleiro Inicial: ------------>", best_solution)
 
     n1 = creat_neighbor(best_solution,n,tabu_list)
     n2 = creat_neighbor(best_solution,n,tabu_list)
-    #n3 = creat_neighbor(best_solution,n,tabu_list)
+    n3 = creat_neighbor(best_solution,n,tabu_list)
 
     fit_tabuleiro = fitness(best_solution,n)
     print("Fitness Tabuleiro Inicial:", fit_tabuleiro)
     fit_n1 = fitness(n1,n)
     fit_n2 = fitness(n2,n)
-    #fit_n3 = fitness(n3,n)
+    fit_n3 = fitness(n3,n)
 
-    if (fit_n1 < fit_tabuleiro):
+    melhor_fitness = min(fit_n1, fit_n2, fit_n3)
+
+    if melhor_fitness == fit_n1:
         best_solution = n1
-        print("Tabuleiro n1:", best_solution)
-    elif (fit_n2 < fit_tabuleiro):
-        best_solution = n2
-        print("Tabuleiro n2:", best_solution)
-    elif (fit_n1 == fit_tabuleiro):
-            best_solution = n1
-            print("Tabuleiro n1:", best_solution)
-    elif (fit_n2 == fit_tabuleiro):
-        best_solution = n2
-        print("Tabuleiro n2:", best_solution)
-    """elif (fit_n3 < fit_tabuleiro):
-        best_solution = n3
-        print("Tabuleiro n3:", best_solution)"""
-    
-    """elif (fit_n3 == fit_tabuleiro):
-        best_solution = n3
-        print("Tabuleiro n3:", best_solution)
-"""
 
+    elif melhor_fitness == fit_n2:
+        best_solution = n2
+
+    else:
+        best_solution = n3
+    
     return best_solution,fitness(best_solution,n),tabu_list
 
 #------------- MAIN ------------
 
 
 n = 6
-parada = 100
+parada = 1000
 final_fitness = 100
 tabu_list = creat_tabu(n)
 tabuleiro = creat_tabuleiro(n)
-print ("oiu")
+print("PRIMEIRO TABULEIRO: ", tabuleiro)
+print ("Teste")
 
 while parada != 0 and final_fitness > 0:
     print("----------------------------------------")

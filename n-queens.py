@@ -1,5 +1,5 @@
 import random
-
+import time
 #matriz = [[0 for x in range(n)] for y in range(n)]
 
 
@@ -27,7 +27,7 @@ def print_tabu(tabu_list, n):
         print(tabu_list[i])
 
 def update_tabu(tabu_list,n1,n2):
-    TESTE = 7           #<--------------------------------------------------PARAMETRO 1
+    TESTE = 12           #<--------------------------------------------------PARAMETRO 1
     tabu_list[n1][n2] = TESTE
     tabu_list[n2][n1] = tabu_list[n2][n1] + 1
     return tabu_list
@@ -79,43 +79,56 @@ def fitness(tabuleiro,n):
 
 def n_queens(best_solution,n,tabu_list):
 
-    #best_solution = random.sample(range(1,n + 1),n)
 
     print("Tabuleiro Inicial: ------------>", best_solution)
 
     n1 = creat_neighbor(best_solution,n,tabu_list)
     n2 = creat_neighbor(best_solution,n,tabu_list)
     n3 = creat_neighbor(best_solution,n,tabu_list)
+    n4 = creat_neighbor(best_solution,n,tabu_list)
+    n5 = creat_neighbor(best_solution,n,tabu_list)
+    n6 = creat_neighbor(best_solution,n,tabu_list)
 
     fit_tabuleiro = fitness(best_solution,n)
     print("Fitness Tabuleiro Inicial:", fit_tabuleiro)
     fit_n1 = fitness(n1,n)
     fit_n2 = fitness(n2,n)
     fit_n3 = fitness(n3,n)
+    fit_n4 = fitness(n4,n)
+    fit_n5 = fitness(n5,n)
+    fit_n6 = fitness(n6,n)
 
-    melhor_fitness = min(fit_n1, fit_n2, fit_n3)
+    #---------------------------------------------max ou min
+    melhor_fitness = min(fit_n1, fit_n2, fit_n3,fit_n4,fit_n5,fit_n6)
 
     if melhor_fitness == fit_n1:
         best_solution = n1
 
     elif melhor_fitness == fit_n2:
         best_solution = n2
-
-    else:
+    elif melhor_fitness == fit_n3:
         best_solution = n3
+    elif melhor_fitness == fit_n4:
+        best_solution = n4
+    elif melhor_fitness == fit_n5:
+             best_solution = n5
+    else:
+        best_solution = n6
     
     return best_solution,fitness(best_solution,n),tabu_list
 
 #------------- MAIN ------------
 
 
-n = 6
-parada = 1000
-final_fitness = 100
+n = 50
+parada = 100
+final_fitness = 100 # max = 0 / min = 100
 tabu_list = creat_tabu(n)
 tabuleiro = creat_tabuleiro(n)
 print("PRIMEIRO TABULEIRO: ", tabuleiro)
 print ("Teste")
+
+inicio = time.perf_counter()
 
 while parada != 0 and final_fitness > 0:
     print("----------------------------------------")
@@ -127,3 +140,11 @@ while parada != 0 and final_fitness > 0:
     
     print_tabu(tabu_list, n)
     parada -= 1
+
+fim = time.perf_counter()
+temp = fim - inicio
+
+print("----------------------------------------")
+print("Final Fitness:", final_fitness)
+print (f"Tempo de execuçao: {temp:.6f} segundos")
+print("----------------------------------------")

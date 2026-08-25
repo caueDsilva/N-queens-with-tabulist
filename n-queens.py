@@ -27,9 +27,10 @@ def print_tabu(tabu_list, n):
         print(tabu_list[i])
 
 def update_tabu(tabu_list,n1,n2):
-    TESTE = 22           #<--------------------------------------------------PARAMETRO 1
+    TESTE = 30           #<--------------------------------------------------PARAMETRO 1
     tabu_list[n1][n2] = TESTE
     tabu_list[n2][n1] = tabu_list[n2][n1] + 1
+    update_available_moves(tabu_list)
     return tabu_list
 
 def decrement_tabu(tabu_list,n):
@@ -39,16 +40,22 @@ def decrement_tabu(tabu_list,n):
                 tabu_list[i][j] = tabu_list[i][j] - 1
     return tabu_list
 
-def creat_neighbor(n,tabu_list):
-    
-    available_moves = []
-
+def update_available_moves(tabu_list):
     for i in range(n):
-        for j in range(i + 1 ,n): # pula o [0,0], [1,1], [2,2] e assim por diante
-            if (i<j and tabu_list[i][j] == 0):
-                available_moves.append((i,j))
+            for j in range(i + 1 ,n): # pula o [0,0], [1,1], [2,2] e assim por diante
+                if (i<j and tabu_list[i][j] == 0):
+                    set_moves((i,j))
+    return None
 
-    if len(available_moves) == 0:
+def set_moves(new_move):
+    global moves 
+    moves.append(new_move)
+
+def get_moves():
+    return moves
+
+def creat_neighbor(tabu_list):
+    if len(get_moves()) == 0:
         print("Criterio de inspiraçao ativo")
         menor1 = 10000
         posicao = [0,0]
@@ -59,11 +66,7 @@ def creat_neighbor(n,tabu_list):
                     posicao = (i,j)
         n1,n2 = posicao
     else: 
-        n1, n2 = random.choice(available_moves)
-
-    #v1 = tabuleiro.copy()
-    #v1[n1],v1[n2] = v1[n2] , v1[n1]
-    #update_tabu(tabu_list, n1, n2)
+        n1, n2 = random.choice(get_moves())
 
     return n1,n2
 
@@ -92,7 +95,7 @@ def n_queens(best_solution,n,tabu_list,x):
 
     neighbor = []
     for _ in range(x):
-        movimento = creat_neighbor(n, tabu_list)
+        movimento = creat_neighbor(tabu_list)
         neighbor.append(movimento)
 
     for p1,p2 in neighbor:
@@ -102,7 +105,7 @@ def n_queens(best_solution,n,tabu_list,x):
 
         fit_vizinho = fitness(vizinho, n)
 
-        if fit_vizinho < melhor_fitness:
+        if fit_vizinho <= melhor_fitness:
 
             melhor_fitness = fit_vizinho
             best_position = (p1, p2)
@@ -114,15 +117,20 @@ def n_queens(best_solution,n,tabu_list,x):
 
     return melhor_tabuleiro,melhor_fitness,tabu_list
 
+
+#------------- MAIN ------------
+#------------- MAIN ------------
 #------------- MAIN ------------
 
 
-n = 20
-x = 8 #----------------------------> numero de vizinhos gerados
+n = 50
+x = 30 #----------------------------> numero de vizinhos gerados
+moves = []
 parada = 1000
 final_fitness = 100 # max = 0 / min = 100
 tabu_list = creat_tabu(n)
 tabuleiro = creat_tabuleiro(n)
+update_available_moves(tabu_list)
 print("PRIMEIRO TABULEIRO: ", tabuleiro)
 print ("Teste")
 
@@ -146,3 +154,15 @@ print("----------------------------------------")
 print("Final Fitness:", final_fitness)
 print (f"Tempo de execuçao: {temp:.6f} segundos")
 print("----------------------------------------")
+
+
+"""
+Tempo médio para 50 rainahs: 2.0 seg
+
+Tempo médio para 20 rainhas: 0.045 seg
+
+Tempo médio para 10 rainhas: 0.03 seg
+
+Tempo médio para 6 rainhas: 0.02 seg
+
+"""

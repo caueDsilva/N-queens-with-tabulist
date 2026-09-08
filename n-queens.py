@@ -123,7 +123,7 @@ def n_queens(best_solution,n,tabu_list,x):
 #------------- MAIN ------------
 
 
-n = 50
+n = 50 #----------------------------> numero de rainhas
 x = 30 #----------------------------> numero de vizinhos gerados
 moves = []
 parada = 1000

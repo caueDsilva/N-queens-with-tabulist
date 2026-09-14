@@ -1,17 +1,7 @@
 import random
 import time
-#matriz = [[0 for x in range(n)] for y in range(n)]
+import matplotlib.pyplot as plt
 
-
-"""for i in range(n):
-    for j in range(n):
-        if j >i:
-            matriz[i][j] = 1
-        if i > j:
-            matriz[i][j] = 1
-        print(matriz[i][j], end=" ")
-    print()
-"""
 def creat_tabuleiro(n):
     tabuleiro = random.sample(range(1,n + 1),n)
     return tabuleiro
@@ -41,9 +31,9 @@ def decrement_tabu(tabu_list,n):
     return tabu_list
 
 def update_available_moves(tabu_list):
-    for i in range(n):
+    for i in range(n): #<--------------------------------------------------------------- MUDANÇA PARA PROVA range(n) para range(1,n)
             for j in range(i + 1 ,n): # pula o [0,0], [1,1], [2,2] e assim por diante
-                if (i<j and tabu_list[i][j] == 0):
+                if (i<j and tabu_list[i][j] == 0 ): #<--------------------------------------------------------------- RAINHA FIXA i != 3 and j != 3
                     set_moves((i,j))
     return None
 
@@ -59,7 +49,7 @@ def creat_neighbor(tabu_list):
         print("Criterio de inspiraçao ativo")
         menor1 = 10000
         posicao = [0,0]
-        for i in range(n):
+        for i in range(n): 
             for j in range(i): 
                 if (tabu_list[i][j] < menor1):
                     menor1 = tabu_list[i][j]
@@ -119,15 +109,14 @@ def n_queens(best_solution,n,tabu_list,x):
 
 
 #------------- MAIN ------------
-#------------- MAIN ------------
-#------------- MAIN ------------
+#-------------------------------
 
-
-n = 50 #----------------------------> numero de rainhas
-x = 30 #----------------------------> numero de vizinhos gerados
+n = 50 #-------> numero de rainhas
+x = 30 #-------> numero de vizinhos gerados
 moves = []
 parada = 1000
 final_fitness = 100 # max = 0 / min = 100
+fitness_por_ciclo = []  # Guarda o fitness de cada ciclo
 tabu_list = creat_tabu(n)
 tabuleiro = creat_tabuleiro(n)
 update_available_moves(tabu_list)
@@ -143,12 +132,32 @@ while parada != 0 and final_fitness > 0:
     tabuleiro,final_fitness,tabu_list = n_queens(tabuleiro,n,tabu_list,x)
     print("Final Fitness:", final_fitness)
     print("Parada:", parada)
+    if final_fitness % 2 == 0:
+        fitness_por_ciclo.append(final_fitness)
+    
     
     print_tabu(tabu_list, n)
     parada -= 1
 
 fim = time.perf_counter()
 temp = fim - inicio
+
+#---------------Grafico de Fitness x Ciclo----------------
+#---------------------------------------------------------
+plt.figure(figsize=(10, 6))
+
+plt.plot(
+    range(1, len(fitness_por_ciclo) + 1),
+    fitness_por_ciclo,
+    marker='o'
+)
+
+plt.xlabel("Ciclo (Loop)")
+plt.ylabel("Fitness")
+plt.title(f"Fitness x Ciclo - {n} Rainhas")
+
+plt.grid(True)
+plt.show()
 
 print("----------------------------------------")
 print("Final Fitness:", final_fitness)
